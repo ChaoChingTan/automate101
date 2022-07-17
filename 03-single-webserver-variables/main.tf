@@ -28,8 +28,8 @@ resource "aws_security_group" "webserver-sg" {
   name = "webserver-sg"
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = var.http_port
+    to_port     = var.http_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
