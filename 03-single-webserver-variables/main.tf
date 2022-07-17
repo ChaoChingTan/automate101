@@ -1,18 +1,20 @@
 provider "aws" {
-  #region = "us-east-1"
   region = var.aws_region
 }
 
 resource "aws_instance" "webserver" {
-  ami           = "ami-0cff7528ff583bf9a"
-  instance_type = "t2.micro"
-  #security_groups = [aws_security_group.webserver-sg.id,aws_security_group.ssh-sg.id]
-  vpc_security_group_ids = [ aws_security_group.webserver-sg.id, aws_security_group.ssh-sg.id ]
+  ami           = var.lnxsr_ami
+  instance_type = var.lnxsr_instance_type
+  vpc_security_group_ids = [ aws_security_group.webserver-sg.id, aws_security_group.ssh-sg.id, aws_security_group.outbound-sg.id ]
+  key_name = var.lnxsr_key_name
 
   user_data = <<-EOF
               #!/bin/bash
+
               yum install httpd -y
               systemctl start httpd
+              systemctl enable httpd
+
               echo "Hello, World" > /var/www/html/index.html
               EOF
 
@@ -20,7 +22,7 @@ resource "aws_instance" "webserver" {
   user_data_replace_on_change = true
 
   tags = {
-    Name = "webserver-01"
+    Name = "webserver-03"
   }
 }
 
@@ -42,6 +44,17 @@ resource "aws_security_group" "ssh-sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "outbound-sg" {
+  name = "outboung-sg"
+
+  egress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "all"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
