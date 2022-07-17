@@ -7,11 +7,13 @@ resource "aws_instance" "webserver" {
   instance_type = "t2.micro"
   #security_groups = [aws_security_group.webserver-sg.id,aws_security_group.ssh-sg.id]
   vpc_security_group_ids = [ aws_security_group.webserver-sg.id, aws_security_group.ssh-sg.id ]
+  key_name = "vockey"
 
   user_data = <<-EOF
               #!/bin/bash
               yum install httpd -y
               systemctl start httpd
+              systemctl enable httpd
               echo "Hello, World" > /var/www/html/index.html
               EOF
 
@@ -19,7 +21,7 @@ resource "aws_instance" "webserver" {
   user_data_replace_on_change = true
 
   tags = {
-    Name = "webserver-01"
+    Name = "webserver-02"
   }
 }
 
