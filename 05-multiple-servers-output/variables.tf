@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "server_count" {
   description = "Number of servers"
   type        = number
-  default     = 2
+  default     = 8
 }
 
 variable "http_port" {
